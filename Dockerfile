@@ -1,4 +1,4 @@
-FROM node:14-alpine as node
+FROM --platform=${BUILDPLATFORM} node:14-alpine as node
 WORKDIR /build/Bonsai
 
 ADD src/Bonsai/package.json .
@@ -7,22 +7,24 @@ RUN npm ci
 ADD src/Bonsai .
 RUN node_modules/.bin/gulp build
 
-FROM --platform=${BUILDPLATFORM} mcr.microsoft.com/dotnet/sdk:8.0 as net-builder
+FROM --platform=${BUILDPLATFORM} mcr.microsoft.com/dotnet/sdk:8.0-alpine as net-builder
+ARG TARGETARCH=arm64
+
 WORKDIR /build
 ADD src/Bonsai.sln .
 ADD src/Bonsai/Bonsai.csproj Bonsai/
 ADD src/Bonsai.Tests.Search/Bonsai.Tests.Search.csproj Bonsai.Tests.Search/
 
-RUN dotnet restore --use-current-runtime
+RUN dotnet restore -a $TARGETARCH
 COPY --from=node /build .
 
 RUN dotnet publish Bonsai/Bonsai.csproj \
     --output ../out/ \
     --configuration Release \
-    --use-current-runtime \
+    -a $TARGETARCH \
     --self-contained true
 
-FROM alpine:latest
+FROM --platform=${BUILDPLATFORM} alpine:latest
 
 RUN apk add --no-cache nodejs ffmpeg libintl icu icu-data-full && \
     apk add --no-cache libgdiplus --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/
