@@ -30,6 +30,6 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: impworks/bonsai:latest
+          tags: kipsapp/bonsai:latest
           build-args: |
             BUILD_COMMIT=${{ github.sha }}
