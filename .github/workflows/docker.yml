@@ -3,7 +3,7 @@ name: ci
 on:
   push:
     branches:
-      - 'master'
+      - 'feat_multi-platform_docker-test'
 
 jobs:
   docker:
@@ -26,6 +26,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           platforms: linux/amd64,linux/arm64
           push: true
           tags: impworks/bonsai:latest
