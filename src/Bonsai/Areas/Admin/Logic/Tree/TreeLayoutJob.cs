@@ -37,7 +37,7 @@ namespace Bonsai.Areas.Admin.Logic.Tree
 
         protected override async Task ExecuteAsync(CancellationToken token)
         {
-            _logger.Information("test");
+            _logger.Information("test2");
             await _db.Pages.ExecuteUpdateAsync(x => x.SetProperty(p => p.TreeLayoutId, (Guid?)null), token);
             await _db.TreeLayouts.ExecuteDeleteAsync(token);
 
